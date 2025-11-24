@@ -1,5 +1,4 @@
 import React from 'react';
-// PENTING: Import Outlet dari react-router-dom
 import { useNavigate, Outlet } from 'react-router-dom'; 
 import SidebarDosen from '../components/navigation/SidebarDosen.jsx'; 
 
@@ -7,23 +6,29 @@ const LayoutDosen = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        // Hapus role dari local storage dan redirect ke login
+        // Hapus role pengguna dari localStorage saat logout
         localStorage.removeItem('userRole'); 
+        // Arahkan kembali ke halaman login
         navigate('/login'); 
     };
 
     return (
         <div className="d-flex" id="wrapper">
+            
             {/* Sidebar Komponen */}
-            <div className="bg-dark border-end" id="sidebar-wrapper">
+            {/* Menggunakan bg-white (latar belakang putih) agar sesuai dengan tampilan baru */}
+            <div className="bg-white border-end" id="sidebar-wrapper" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                {/* Header Sidebar (Warna Biru Primary) */}
                 <div className="sidebar-heading bg-primary text-white p-4 fw-bold">Penilaian Lapangan</div>
                 
+                {/* Komponen SidebarDosen (Berisi daftar link menu) */}
                 <SidebarDosen /> 
             </div>
 
             {/* Konten Halaman Utama */}
             <div id="page-content-wrapper" className="w-100">
-                {/* Header/Navbar */}
+                
+                {/* Header/Navbar di atas konten */}
                 <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div className="container-fluid">
                         <h5 className="mb-0 ms-3">Halaman Dosen</h5>
@@ -39,9 +44,8 @@ const LayoutDosen = () => {
                     </div>
                 </nav>
 
-                {/* AREA KRITIS: Konten DashboardPage dirender melalui Outlet */}
+                {/* Konten Halaman yang Akan Diisi (menggunakan Outlet) */}
                 <div className="container-fluid p-4">
-                    {/* Menggantikan {children} dengan <Outlet /> */}
                     <Outlet /> 
                 </div>
             </div>
