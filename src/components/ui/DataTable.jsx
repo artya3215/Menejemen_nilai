@@ -1,81 +1,49 @@
 import React from 'react';
 
-// DataTable menerima data, columns, dan paginationProps
-const DataTable = ({ columns, data, paginationProps }) => {
-
-
-    const { currentPage, totalPages, onPageChange } = paginationProps || {};
-
-    // -----------------------------------------------------
-    // 1. KOMPONEN PAGINASI INTERNAL
-    // -----------------------------------------------------
-    const Pagination = () => {
-        if (!totalPages || totalPages <= 1 || !onPageChange) return null; // Jangan tampilkan jika hanya 1 halaman
-
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pages.push(i);
-        }
-
-        return (
-            <nav className="mt-3">
-                <ul className="pagination justify-content-end">
-                    {pages.map(page => (
-                        <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
-                            <button 
-                                className="page-link"
-                                onClick={() => onPageChange(page)} // Panggil fungsi setCurrentPage di KelasListPage.jsx
-                            >
-                                {page}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </nav>
-        );
-    };
-    // -----------------------------------------------------
-
+const DataTable = ({ columns, data, title }) => {
+    // Dummy Data untuk testing CLS-001
+    const dummyColumns = [{ header: 'ID', accessor: 'id' }, { header: 'Nama Kelas', accessor: 'name' }];
+    const dummyData = [{ id: 1, name: 'Geologi Lapangan A' }, { id: 2, name: 'Sistem Informasi B' }];
 
     return (
-        <div>
-            {/* Tabel Data Utama */}
+        <div className="card shadow-sm p-4 mt-3">
+            <h5 className="card-title mb-3">{title || 'Daftar Data'}</h5>
+            
+            {/* Input Search (CLS-001) */}
+            <input type="text" className="form-control mb-3" placeholder="Cari data..." />
+
             <div className="table-responsive">
-                <table className="table table-striped table-hover">
-                    <thead className="table-light">
+                <table className="table table-bordered table-striped table-hover">
+                    <thead>
                         <tr>
-                            {columns.map((col, index) => (
+                            {(columns || dummyColumns).map((col, index) => (
                                 <th key={index}>{col.header}</th>
                             ))}
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {data && data.length > 0 ? (
-                            data.map((item, rowIndex) => (
-                                <tr key={rowIndex}>
-                                    {columns.map((col, colIndex) => (
-                                        <td key={colIndex}>
-                                            {/* Tampilkan data berdasarkan accessor, atau render kustom */}
-                                            {col.render ? col.render(item) : item[col.accessor]}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={columns.length} className="text-center text-muted">
-                                    Tidak ada data yang tersedia.
+                        {(data || dummyData).map((row, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {(columns || dummyColumns).map((col, colIndex) => (
+                                    <td key={colIndex}>{row[col.accessor]}</td>
+                                ))}
+                                <td>
+                                    <button className="btn btn-sm btn-primary">Lihat Detail</button>
                                 </td>
                             </tr>
-                        )}
+                        ))}
                     </tbody>
                 </table>
             </div>
 
-            {/* 2. RENDERING PAGINASI DI BAWAH TABEL */}
-            {/* Component ini akan merender tombol 1, 2, 3, dst. */}
-            <Pagination />
-
+            {/* Pagination Placeholder */}
+            <nav className="d-flex justify-content-end">
+                <ul className="pagination pagination-sm">
+                    <li className="page-item active"><a className="page-link" href="#">1</a></li>
+                    <li className="page-item"><a className="page-link" href="#">2</a></li>
+                </ul>
+            </nav>
         </div>
     );
 };
