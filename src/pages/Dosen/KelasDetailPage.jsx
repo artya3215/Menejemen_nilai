@@ -1,8 +1,8 @@
-// src/pages/Dosen/KelasDetailPage.jsx
+// src/pages/Dosen/KelasDetail.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../utils/api'; 
+// import api from '../../utils/api'; <-- Dihapus karena tidak terpakai
 
 const KelasDetail = () => { 
     const { id } = useParams();
@@ -36,7 +36,9 @@ const KelasDetail = () => {
 
     // 🔥 HANDLER UNTUK TOMBOL IMPORT MAHASISWA
     const handleImportMahasiswa = () => {
-        alert("Simulasi: Membuka modal/form untuk Import Mahasiswa via CSV/Excel.");
+        // PERBAIKAN: Mengganti alert() dengan konsol log simulasi atau membuka modal/halaman
+        console.log("Simulasi: Membuka modal/form untuk Import Mahasiswa via CSV/Excel.");
+        // Anda bisa menambahkan state modal di sini: setShowImportModal(true)
     };
 
     // 🔥 HANDLER UNTUK HAPUS MAHASISWA
@@ -48,9 +50,10 @@ const KelasDetail = () => {
         try {
             // Simulasi: Panggil await api.delete(`/dosen/kelas/${kelas.id}/mahasiswa/${nim}`); 
             setMahasiswaList(prev => prev.filter(mhs => mhs.nim !== nim));
-            alert(`Mahasiswa NIM ${nim} telah dihapus (Simulasi).`);
+            // Menghilangkan alert() di sini
+            console.log(`Mahasiswa NIM ${nim} telah dihapus (Simulasi).`);
         } catch (error) {
-            alert('Gagal menghapus mahasiswa. Cek API Mock.');
+            console.error('Gagal menghapus mahasiswa. Cek API Mock.');
         }
     };
     // ------------------------------------------

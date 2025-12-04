@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // src/index.js
 
 import React from 'react';
@@ -18,17 +17,5 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App /> 
-=======
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Wajib: Import CSS Bootstrap
-
-// Pastikan DIV yang ditargetkan di index.html bernama 'root'
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
->>>>>>> 75a86da2dbdb1494463279778354cd848c6a6ad1
   </React.StrictMode>
 );

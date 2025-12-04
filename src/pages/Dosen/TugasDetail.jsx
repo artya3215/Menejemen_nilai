@@ -1,43 +1,72 @@
 // src/pages/Dosen/TugasDetailPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import api from '../../../utils/api'; 
+import AturKelompokModal from '../../components/AturKelompokModal'; // <<<< KOMPONEN BARU
 
 const TugasDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [tugas, setTugas] = useState(null);
     const [groups, setGroups] = useState([]);
+    const [loading, setLoading] = useState(true);
+    // 💡 State untuk Modal
+    const [showAturModal, setShowAturModal] = useState(false);
+    
+    // Asumsi Total Mahasiswa di Kelas Tugas ini
+    const totalMhsKelas = 25; 
 
-    // --- TITIK INTEGRASI: FUNGSI FETCH DATA TUGAS & KELOMPOK ---
-    useEffect(() => {
-        // --- SIMULASI ---
-        // Asumsi data tugas yang lebih lengkap (misalnya kelasId)
-        setTugas({ id: id, judul: `Tugas Lapangan ke-${id}`, lokasi: 'Lokal', status: 'aktif' });
-        // Data Kelompok simulasi
-        setGroups([
-            { id: 1, nama: 'Kelompok 1', anggota: 5, status: 'Sudah Dibentuk' },
-            { id: 2, nama: 'Kelompok 2', anggota: 5, status: 'Belum Dibentuk' },
-        ]);
+    // --- FUNGSI FETCH DATA TUGAS & KELOMPOK (Dibuat useCallback untuk kemudahan refresh) ---
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Simulasi Fetch Detail Tugas dan Kelompok
+            const mockTugas = { id: id, judul: `Tugas Lapangan ke-${id}`, lokasi: 'Lokal', status: 'aktif' };
+            const mockGroups = [
+                { id: 1, nama: 'Kelompok 1', anggota: 5, status: 'Sudah Dibentuk' },
+                { id: 2, nama: 'Kelompok 2', anggota: 5, status: 'Sudah Dibentuk' },
+            ];
+            setTugas(mockTugas);
+            setGroups(mockGroups);
+        } catch (error) {
+             console.error('Gagal mengambil detail tugas', error);
+        } finally {
+             setLoading(false);
+        }
     }, [id]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
     // ------------------------------------------
 
-    // 🔥 HANDLER UNTUK TOMBOL ATUR PEMBENTUKAN
+    // 💡 HANDLER BARU: Dijalankan setelah kelompok dibuat dari Modal
+    const handleGroupCreated = ({ totalKelompok, metode }) => {
+        if (metode === 'manual') {
+            // Navigasi ke form pemilihan manual
+            console.log("Navigasi ke halaman pemilihan anggota manual.");
+            // navigate(`/dosen/tugas/${id}/kelompok/manual`);
+        } else {
+            // Refresh data kelompok (simulasi)
+            fetchData();
+        }
+    };
+    
+    // HANDLER UNTUK TOMBOL ATUR PEMBENTUKAN
     const handleAturPembentukan = () => {
-        // Simulasi Aksi: Membuka modal/halaman untuk mengatur kelompok (otomatis/manual)
-        alert("Simulasi: Navigasi ke form Pengaturan Pembentukan Kelompok (Otomatis/Manual).");
-        // Di aplikasi nyata: navigate(`/dosen/tugas/${id}/atur-kelompok`)
+        setShowAturModal(true); // Membuka Modal
     };
 
-    // 🔥 HANDLER UNTUK TOMBOL LIHAT ANGGOTA
+    // HANDLER UNTUK TOMBOL LIHAT ANGGOTA
     const handleLihatAnggota = (groupId) => {
-        // Simulasi Aksi: Membuka modal/tabel untuk melihat anggota kelompok
-        alert(`Simulasi: Membuka modal untuk melihat anggota Kelompok ${groupId}.`);
+        // PERBAIKAN: Mengganti alert() dengan konsol log simulasi atau membuka modal/halaman
+        console.log(`Simulasi: Membuka modal untuk melihat anggota Kelompok ${groupId}.`);
+        // setShowAnggotaModal(true);
     };
     // ------------------------------------------
 
-    if (!tugas) return <p>Memuat detail tugas...</p>;
+    if (loading) return <p>Memuat detail tugas...</p>;
+    if (!tugas) return <div className="alert alert-danger">Detail Tugas tidak ditemukan.</div>;
 
     return (
         <div className="container-fluid">
@@ -52,11 +81,13 @@ const TugasDetailPage = () => {
                     Pembentukan Kelompok
                 </div>
                 <div className="card-body">
-                    <p>Halaman ini akan digunakan untuk fitur pembentukan kelompok ({tugas.judul}).</p>
-                    {/* 🔥 TOMBOL ATUR PEMBENTUKAN KELOMPOK */}
+                    <p>Total Mahasiswa: **{totalMhsKelas}** orang.</p>
+                    {/* TOMBOL ATUR PEMBENTUKAN KELOMPOK */}
                     <button className="btn btn-warning mb-3" onClick={handleAturPembentukan}>
                         <i className="bi bi-people-fill"></i> Atur Pembentukan Kelompok
                     </button>
+                    
+                    {/* Tabel Kelompok */}
                     <table className="table table-striped">
                         <thead>
                             <tr>
@@ -67,13 +98,11 @@ const TugasDetailPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* 🔥 DATA KELOMPOK DITAMPILKAN DI SINI */}
                             {groups.map((group) => (
                                 <tr key={group.id}>
                                     <td>{group.nama}</td>
                                     <td>{group.anggota} orang</td>
                                     <td>{group.status}</td>
-                                    {/* 🔥 TOMBOL LIHAT ANGGOTA */}
                                     <td>
                                         <button 
                                             className="btn btn-sm btn-outline-info" 
@@ -88,6 +117,15 @@ const TugasDetailPage = () => {
                     </table>
                 </div>
             </div>
+            
+            {/* 💡 MODAL UNTUK PENGATURAN KELOMPOK */}
+            <AturKelompokModal
+                show={showAturModal}
+                onClose={() => setShowAturModal(false)}
+                taskId={tugas.id}
+                totalMahasiswa={totalMhsKelas}
+                onGroupCreated={handleGroupCreated}
+            />
         </div>
     );
 };

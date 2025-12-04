@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../utils/api'; // 🔥 PERBAIKAN PATH: Menggunakan '../../utils/api'
+import api from '../../utils/api'; 
 
 const KelasListPage = () => {
     const navigate = useNavigate();
@@ -10,13 +10,23 @@ const KelasListPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // 🔥 FUNGSI FETCH KELAS DARI MOCK API + LOCAL STORAGE
     useEffect(() => {
         const fetchKelas = async () => {
             try {
-                // Memuat data kelas dari mock API
+                // 1. Ambil data statis dari mock API
                 const response = await api.get('/dosen/kelas'); 
-                setDataKelas(response.data.data);
+                const staticKelas = response.data.data;
+                
+                // 2. Ambil data yang dibuat pengguna dari localStorage
+                const localKelas = JSON.parse(localStorage.getItem('userKelas')) || [];
+                
+                // 3. Gabungkan data (local data diutamakan)
+                const combinedList = [...staticKelas.filter(st => !localKelas.some(lt => lt.id === st.id)), ...localKelas];
+                
+                setDataKelas(combinedList);
             } catch (err) {
+                // Ini akan menangkap error 404 dari mock API dan menampilkan pesan
                 setError("Gagal memuat data kelas. Mohon cek API/Mock data.");
             } finally {
                 setLoading(false);
@@ -29,8 +39,8 @@ const KelasListPage = () => {
     // FUNGSI NAVIGASI YANG DIBUTUHKAN
     
     const handleAdd = () => {
-        alert("Simulasi: Navigasi ke form Tambah Kelas Baru.");
-        // Di aplikasi nyata: navigate('/dosen/kelas/create'); 
+        // PERBAIKAN: Navigasi ke RUTE PEMBUATAN KELAS BARU yang sebenarnya
+        navigate('/dosen/kelas/baru'); 
     };
 
     const handleDetail = (id) => {
@@ -40,11 +50,20 @@ const KelasListPage = () => {
 
     const handleDelete = (id, nama) => {
         if (window.confirm(`Apakah Anda yakin ingin menghapus kelas ${nama}? (Simulasi)`)) {
-            // Logika penghapusan (simulasi)
-            console.log(`[SIMULASI] Menghapus kelas ID: ${id}`);
-            // Simulasi: Panggil await api.delete(`/dosen/kelas/${id}`);
+            // Cek apakah data ini di local storage
+            const localKelas = JSON.parse(localStorage.getItem('userKelas')) || [];
+            const isLocal = localKelas.some(k => k.id === id);
+
+            if (isLocal) {
+                const updatedLocal = localKelas.filter(k => k.id !== id);
+                localStorage.setItem('userKelas', JSON.stringify(updatedLocal));
+            } else {
+                 // Simulasi DELETE API
+                 console.log(`[SIMULASI] Menghapus kelas ID: ${id} dari Mock API.`);
+            }
+
+            // Update state di Front-end
             setDataKelas(prev => prev.filter(kelas => kelas.id !== id));
-            alert(`Kelas ${nama} telah dihapus (Simulasi).`);
         }
     };
     // ------------------------------------------
@@ -99,7 +118,7 @@ const KelasListPage = () => {
                                                     {/* TOMBOL EDIT (Simulasi) */}
                                                     <button 
                                                         className="btn btn-warning btn-sm me-1" 
-                                                        onClick={() => alert('Simulasi: Edit Kelas ID ' + kelas.id)}
+                                                        onClick={() => console.log('Simulasi: Edit Kelas ID ' + kelas.id)}
                                                         title="Edit Informasi Kelas"
                                                     >
                                                         <i className="bi bi-pencil-square"></i> Edit

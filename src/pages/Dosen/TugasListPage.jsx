@@ -11,20 +11,27 @@ const TugasListPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 🔥 Fungsi Fetch Tugas: Memuat data dari API Mock
+    // 🔥 Fungsi Fetch Tugas: Memuat data dari API Mock + LocalStorage
     useEffect(() => {
         const fetchTugas = async () => {
             setLoading(true);
             setError(null);
 
             try {
-                // Panggil API untuk mendapatkan daftar tugas
+                // 1. Ambil data statis dari mock API
                 const response = await api.get('/dosen/tugas'); 
-                setTugasList(response.data.data);
+                const staticTasks = response.data.data;
+                
+                // 2. Ambil data yang dibuat pengguna dari localStorage
+                const localTasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+                
+                // 3. Gabungkan data. Filter duplikat (untuk keamanan) dan gabungkan
+                const combinedList = [...staticTasks.filter(st => !localTasks.some(lt => lt.id === st.id)), ...localTasks];
+                
+                setTugasList(combinedList);
                 setError(null); 
             } catch (err) {
                 console.error("Fetch Tugas Error:", err);
-                // Jika terjadi kegagalan fetch dari mock API, tampilkan error yang jelas
                 setError('Gagal memuat data tugas. Cek apakah endpoint /dosen/tugas di api.js sudah benar.');
                 setTugasList([]);
             } finally {
@@ -38,19 +45,30 @@ const TugasListPage = () => {
     // Handler Hapus Tugas
     const handleDelete = async (id, status) => {
         if (status === 'aktif') {
-            alert("PERINGATAN: Tugas yang sedang aktif tidak bisa dihapus.");
-            return;
+            if (!window.confirm("PERINGATAN: Tugas yang sedang aktif tidak bisa dihapus. Lanjutkan untuk simulasi?")) return;
         }
 
         if (!window.confirm("Yakin ingin menghapus tugas ini? Kelompok dan nilai terkait akan hilang.")) return;
         
         try {
-            await api.delete(`/dosen/tugas/${id}`);
-            // Simulasi penghapusan di Front-end
+            // Cek apakah tugas ada di localStorage (dibuat user)
+            const localTasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+            const isLocalTask = localTasks.some(t => t.id === id);
+
+            if (isLocalTask) {
+                // Hapus dari LocalStorage
+                const updatedLocalTasks = localTasks.filter(t => t.id !== id);
+                localStorage.setItem('userTasks', JSON.stringify(updatedLocalTasks));
+            } else {
+                // Simulasi Hapus dari Backend/Mock API (untuk tugas statis)
+                await api.delete(`/dosen/tugas/${id}`);
+            }
+
+            // Update state di Front-end
             setTugasList(tugasList.filter(t => t.id !== id));
-            alert('Tugas berhasil dihapus (Simulasi).');
+            console.log('Tugas berhasil dihapus (Simulasi).');
         } catch (error) {
-            alert('Gagal menghapus tugas. Cek API Mock.');
+            console.error('Gagal menghapus tugas. Cek API Mock.', error);
         }
     };
 
@@ -76,7 +94,7 @@ const TugasListPage = () => {
                                 <div className="card-body">
                                     <div className="d-flex justify-content-between">
                                         <h5 className="card-title">{tugas.judul}</h5>
-                                        <span className={`badge ${tugas.status === 'aktif' ? 'bg-success' : 'bg-secondary'}`}>
+                                        <span className={`badge ${tugas.status === 'aktif' ? 'bg-success' : tugas.status === 'selesai' ? 'bg-secondary' : 'bg-warning'}`}>
                                             {tugas.status}
                                         </span>
                                     </div>

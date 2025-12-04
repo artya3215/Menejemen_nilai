@@ -68,7 +68,7 @@ const TugasCreatePage = () => {
 
     const totalBobot = kriteria.reduce((sum, item) => sum + (item.bobot || 0), 0);
     
-    // 4. Handle Submit Tugas (Mocking POST)
+    // 4. Handle Submit Tugas (Mocking POST dan Persistensi Lokal)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -93,21 +93,34 @@ const TugasCreatePage = () => {
                 kriteriaPenilaian: kriteria.map(k => ({ nama: k.nama, bobot: k.bobot })),
             };
             
-            // Panggil mock API POST
-            await api.post('/dosen/tugas/create', payload); 
+            // Panggil mock API POST (hanya untuk simulasi delay dan pesan sukses dari server)
+            const mockResponse = await api.post('/dosen/tugas/create', payload); 
+            const newId = mockResponse.data.idTugas;
             
-            setSuccessMsg(`Tugas berhasil dibuat! Mengarahkan kembali ke daftar tugas...`);
+            // 🔥 PERBAIKAN KRITIS: SIMULASI PERSISTENSI KE LOCALSTORAGE
+            const existingTasks = JSON.parse(localStorage.getItem('userTasks')) || [];
             
-            // 🔥 PERBAIKAN: Redirect dengan alert sukses dan navigasi ke Daftar Tugas (simulasi update)
+            const newTask = {
+                id: String(newId),
+                judul: tugas.judul,
+                lokasi: tugas.lokasi,
+                tanggalPelaksanaan: tugas.tanggalPelaksanaan,
+                status: 'draft', // Tugas baru defaultnya draft
+            };
+            
+            localStorage.setItem('userTasks', JSON.stringify([...existingTasks, newTask]));
+            
+            // Navigasi setelah data tersimpan
+            setSuccessMsg(`Tugas "${tugas.judul}" berhasil dibuat! Mengarahkan kembali ke daftar...`);
+            
             setTimeout(() => {
-                alert("Simulasi: Tugas berhasil disimpan. Anda perlu me-refresh halaman Daftar Tugas untuk melihat perubahan (karena ini mock data).");
-                navigate('/dosen/tugas');
-            }, 2000); 
+                navigate('/dosen/tugas'); 
+            }, 1000); 
 
         } catch (err) {
             setError(err.response?.data?.message || 'Terjadi kesalahan saat menyimpan tugas.');
         } finally {
-            setSubmitting(false);
+            // Biarkan navigasi terjadi
         }
     };
 

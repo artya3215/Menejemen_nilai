@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 // src/layouts/LayoutAuth.jsx
 
-=======
->>>>>>> 75a86da2dbdb1494463279778354cd848c6a6ad1
 import React from 'react';
 
 const LayoutAuth = ({ children }) => {

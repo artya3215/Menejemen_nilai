@@ -53,6 +53,7 @@ const TugasSayaPage = () => {
             navigate(`/mahasiswa/tugas/submit/${tugas.id}`);
             
         } else if (tugas.status === 'Nilai Dirilis') {
+            // PERBAIKAN: Mengarahkan ke modal Nilai Kelompok (atau halaman detail nilai tugas)
             navigate('/mahasiswa/nilai'); 
 
         } else if (tugas.status === 'Submitted') {

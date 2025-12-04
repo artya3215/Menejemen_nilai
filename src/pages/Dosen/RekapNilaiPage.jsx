@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'; 
 import api from '../../utils/api'; 
+// ... (DUMMY DATA) ...
 
 const exportRekapNilai = (format) => {
     alert(`[MOCK] Memproses Export ke ${format.toUpperCase()}...`);
@@ -132,7 +133,7 @@ const RekapNilaiPage = () => {
       {/* Container Rekap Nilai */}
       {tugasId && (
         <div className="card shadow-sm">
-          <div className="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+          <div className="card-header d-flex justify-content-between align-items-center bg-dark text-white"> {/* PENYELARASAN WARNA */}
             Rekap Nilai Tugas ID: {tugasId}
             <div className="btn-group">
                 <button className="btn btn-sm btn-light" onClick={() => exportRekapNilai('excel')}>Export Excel</button>

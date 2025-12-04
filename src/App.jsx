@@ -28,6 +28,8 @@ import TugasSayaPage from './pages/Mahasiswa/TugasSayaPage.jsx';
 import FormSubmitTugasPage from './pages/Mahasiswa/FormSubmitTugasPage.jsx';
 import NilaiPage from './pages/Mahasiswa/NilaiPage.jsx';
 import KelompokProyekPage from './pages/Mahasiswa/KelompokProyekPage.jsx';
+import KelasCreatePage from './pages/Dosen/KelasCreatePage.jsx';
+
 
 // ************************************************************
 // 1. AUTH CONTEXT 
@@ -93,20 +95,21 @@ const App = () => {
                             <Route index element={<Navigate to="dashboard" replace />} />
                             <Route path="dashboard" element={<DashboardDosenPage />} />
                             
-                            {/* Kelas */}
+                            {/* Modul Kelas */}
                             <Route path="kelas" element={<KelasListPage />} />
+                            <Route path="kelas/baru" element={<KelasCreatePage />} />
                             <Route path="kelas/:id" element={<KelasDetail />} /> 
                             
-                            {/* Tugas */}
+                            {/* Modul Tugas */}
                             <Route path="tugas" element={<TugasListPage />} />
                             <Route path="tugas/baru" element={<TugasCreatePage />} />
                             <Route path="tugas/:id" element={<TugasDetailPage />} /> 
 
-                            {/* Penilaian */}
+                            {/* Modul Penilaian */}
                             <Route path="penilaian" element={<PenilaianListPage />} /> 
-                            <Route path="penilaian/:kelompokId" element={<FormPenilaianPage />} /> 
+                            <Route path="penilaian/:tugasId/:kelompokId" element={<FormPenilaianPage />} /> 
 
-                            {/* Rekap */}
+                            {/* Modul Rekap */}
                             <Route path="rekap" element={<RekapNilaiPage />} />
                         </Route>
                     </Route>

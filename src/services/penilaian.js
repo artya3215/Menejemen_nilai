@@ -9,13 +9,13 @@ import api from '../utils/api';
 /**
  * Mengambil daftar kriteria penilaian, nilai yang sudah ada (draft), dan status.
  * @param {string} taskId - ID Tugas Lapangan.
- * @param {string} groupId - ID Kelompok yang dinilai.
+ * @param {string} kelompokId - ID Kelompok yang dinilai.
  * @returns {Promise<Object>} - Detail kriteria, nilai yang sudah ada (jika draft), dan feedback.
  */
-export const getAssessmentForm = async (taskId, groupId) => {
+export const getAssessmentForm = async (taskId, kelompokId) => {
   try {
-    // Path disesuaikan dengan skema API mock: /dosen/tugas/{taskId}/kelompok/{groupId}/kriteria
-    const response = await api.get(`/dosen/tugas/${taskId}/kelompok/${groupId}/kriteria`); 
+    // Path disesuaikan dengan skema RUTE BARU di App.jsx dan API mock: /dosen/penilaian/{taskId}/{kelompokId}
+    const response = await api.get(`/dosen/penilaian/${taskId}/${kelompokId}`); 
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Gagal mengambil form penilaian.';
@@ -26,14 +26,15 @@ export const getAssessmentForm = async (taskId, groupId) => {
 /**
  * Menyimpan nilai kelompok (Draft atau Final).
  * @param {string} taskId - ID Tugas Lapangan.
- * @param {string} groupId - ID Kelompok.
+ * @param {string} kelompokId - ID Kelompok.
  * @param {Array<Object>} detailNilai - Array objek {kriteriaId: number, nilai: float, catatan: string}.
  * @param {string} feedbackUmum - Feedback umum dari dosen.
  * @param {string} status - 'draft' atau 'final'.
  */
-export const saveAssessment = async (taskId, groupId, detailNilai, feedbackUmum, status) => {
+export const saveAssessment = async (taskId, kelompokId, detailNilai, feedbackUmum, status) => {
   try {
-    const response = await api.post(`/dosen/tugas/${taskId}/kelompok/${groupId}/nilai`, {
+    // Path POST API tetap menggunakan skema yang jelas
+    const response = await api.post(`/dosen/tugas/${taskId}/kelompok/${kelompokId}/nilai`, {
       detailNilai,
       feedbackUmum,
       status

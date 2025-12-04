@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// 🔥 Impor Modal Kontak Dosen
+// 櫨 Impor Modal Kontak Dosen
 import KontakDosenModal from '../../components/KontakDosenModal.jsx'; 
-// 🔥 Hapus import LayoutMahasiswa jika masih ada
+// 櫨 Hapus import LayoutMahasiswa jika masih ada
 
 const KelompokProyekPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [dataKelompok, setDataKelompok] = useState(null);
-    // 🔥 State untuk mengontrol modal
+    // 櫨 State untuk mengontrol modal
     const [showContactModal, setShowContactModal] = useState(false); 
 
     useEffect(() => {
@@ -31,7 +31,7 @@ const KelompokProyekPage = () => {
         }, 800);
     }, []);
 
-    // 🔥 HANDLER BARU: Membuka modal
+    // 櫨 HANDLER BARU: Membuka modal
     const handleHubungiDosen = () => {
         setShowContactModal(true); 
     };
@@ -80,7 +80,7 @@ const KelompokProyekPage = () => {
                         <div>
                             <strong>{dataKelompok.dosenPembimbing}</strong>
                         </div>
-                        {/* 🔥 TOMBOL TERIKAT KE HANDLER BARU */}
+                        {/* 櫨 TOMBOL TERIKAT KE HANDLER BARU */}
                         <button className="btn btn-sm btn-success rounded-pill" onClick={handleHubungiDosen}>
                             <i className="bi bi-chat-dots-fill me-1"></i> Hubungi Dosen
                         </button>
@@ -120,7 +120,7 @@ const KelompokProyekPage = () => {
                 </div>
             </div>
             
-            {/* 🔥 MODAL KONTAK DOSEN DIAKTIFKAN */}
+            {/* 櫨 MODAL KONTAK DOSEN DIAKTIFKAN */}
             <KontakDosenModal
                 show={showContactModal}
                 onClose={() => setShowContactModal(false)}

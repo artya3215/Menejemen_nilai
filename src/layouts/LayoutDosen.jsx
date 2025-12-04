@@ -1,5 +1,4 @@
 // src/layouts/LayoutDosen.jsx
-<<<<<<< HEAD
 
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -35,7 +34,7 @@ const LayoutDosen = ({ children }) => {
             
             <div className="flex-grow-1 d-flex flex-column">
                 
-                {/* 🔥 PERBAIKAN KRITIS: Header menggunakan warna Putih (bg-white) dan teks gelap (text-dark) */}
+                {/* 🔥 Header menggunakan warna Putih (bg-white) dan teks gelap (text-dark) */}
                 <header className="navbar navbar-light bg-white shadow-sm p-3 border-bottom sticky-top">
                     <div className="container-fluid">
                         <h4 className="mb-0 text-primary fw-bold">{finalTitle}</h4> 
@@ -58,22 +57,5 @@ const LayoutDosen = ({ children }) => {
         </div>
     );
 };
-=======
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import SidebarDosen from '../components/navigation/SidebarDosen';
-
-const LayoutDosen = () => (
-    <div className="d-flex">
-        <div className="bg-light border-end" style={{ width: '250px', minHeight: '100vh' }}>
-            <div className="p-3 fw-bold text-primary border-bottom">Dosen Panel</div>
-            <SidebarDosen />
-        </div>
-        <div className="flex-grow-1 p-4" style={{ overflowY: 'auto', maxHeight: '100vh' }}>
-            <Outlet /> 
-        </div>
-    </div>
-);
->>>>>>> 75a86da2dbdb1494463279778354cd848c6a6ad1
 
 export default LayoutDosen;

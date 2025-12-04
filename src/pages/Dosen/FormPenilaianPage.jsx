@@ -1,22 +1,21 @@
-// src/pages/Dosen/FormPenilaianPage.jsx
+// src/pages/Dosen/FormPenilaianPage.jsx (Perbaikan Fokus pada Destructuring)
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAssessmentForm, saveAssessment } from '../../services/penilaian'; 
 
 const FormPenilaianPage = () => {
-    const { kelompokId } = useParams(); 
+    // Ambil kedua parameter dari URL
+    const { tugasId, kelompokId } = useParams(); 
     const navigate = useNavigate();
 
-    const [tugasId] = useState('101'); 
     const [kelompokNama, setKelompokNama] = useState(`Kelompok ${kelompokId}`); 
 
-    // PENTING: Inisialisasi kriteria sebagai array kosong
     const [kriteria, setKriteria] = useState([]); 
     const [nilaiInputs, setNilaiInputs] = useState({}); 
     const [feedback, setFeedback] = useState('');
     const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
+    const [submitting, setSubmitting] = useState(false); // Perhatikan: ini harus useState, bukan boolean biasa
     const [error, setError] = useState(null);
     const [currentStatus, setCurrentStatus] = useState('belum dinilai'); 
 
@@ -25,16 +24,24 @@ const FormPenilaianPage = () => {
         setLoading(true);
         setError('');
         
+        if (!tugasId || !kelompokId) {
+            setError('ID Tugas atau ID Kelompok tidak ditemukan di URL.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const responseData = await getAssessmentForm(tugasId, kelompokId);
             
             setKelompokNama(`Kelompok ${kelompokId} (Tugas: ${tugasId})`); 
 
+            // 🔥 PERBAIKAN PENTING: Gunakan Destructuring dengan Default ke Array Kosong
             const fetchedKriteria = responseData.kriteria || [];
+            const nilaiYangAda = responseData.nilaiYangAda || [];
             
-            // Inisialisasi input dengan nilai yang sudah ada (aman dari reduce)
+            // Inisialisasi input dengan nilai yang sudah ada
             const initialInputs = fetchedKriteria.reduce((acc, item) => {
-                const existingValue = responseData.nilaiYangAda?.find(d => d.kriteriaId === item.idKriteria)?.nilai || 0;
+                const existingValue = nilaiYangAda.find(d => d.kriteriaId === item.idKriteria)?.nilai || 0;
                 acc[item.idKriteria] = existingValue;
                 return acc;
             }, {});
@@ -45,17 +52,18 @@ const FormPenilaianPage = () => {
             setCurrentStatus(responseData.status || 'belum dinilai');
 
         } catch (err) {
+            // Ini akan menangkap kegagalan API jika key tugas/kelompok tidak ada di mock
             setError(err.message || 'Gagal memuat form penilaian. Cek API Mock.');
         } finally {
             setLoading(false);
         }
-    }, [tugasId, kelompokId]);
+    }, [tugasId, kelompokId]); 
 
     useEffect(() => {
         fetchAssessmentData();
     }, [fetchAssessmentData]);
 
-    // useMemo untuk Total Nilai (Aman karena kriteria defaultnya [])
+    // useMemo untuk Total Nilai
     const totalNilai = useMemo(() => {
         if (!kriteria.length) return 0.00;
 
@@ -122,7 +130,7 @@ const FormPenilaianPage = () => {
     return (
         <>
             <h2>📝 Form Penilaian</h2>
-            <h4 className="text-primary">Kelompok: **{kelompokNama}**</h4>
+            <h4 className="text-primary">Kelompok: **{kelompokNama}** (Tugas ID: {tugasId})</h4>
 
             <div className="card shadow p-4 mt-3">
                 {error && <div className="alert alert-danger">{error}</div>}

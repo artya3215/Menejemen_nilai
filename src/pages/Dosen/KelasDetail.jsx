@@ -1,8 +1,8 @@
-// src/pages/Dosen/KelasDetailPage.jsx
+// src/pages/Dosen/KelasDetail.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../utils/api'; 
+import ImportMahasiswaModal from '../../components/ImportMahasiswaModal'; // <<<< IMPORT MODAL BARU
 
 const KelasDetail = () => { 
     const { id } = useParams();
@@ -10,6 +10,7 @@ const KelasDetail = () => {
     const [kelas, setKelas] = useState(null);
     const [mahasiswaList, setMahasiswaList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showImportModal, setShowImportModal] = useState(false); // <<<< STATE MODAL
 
     // --- FUNGSI FETCH DATA KELAS ---
     useEffect(() => {
@@ -36,7 +37,17 @@ const KelasDetail = () => {
 
     // 🔥 HANDLER UNTUK TOMBOL IMPORT MAHASISWA
     const handleImportMahasiswa = () => {
-        alert("Simulasi: Membuka modal/form untuk Import Mahasiswa via CSV/Excel.");
+        setShowImportModal(true); // Membuka Modal
+    };
+
+    // 🔥 HANDLER UNTUK SUCCESS IMPORT (Simulasi menambah mahasiswa baru)
+    const handleImportSuccess = (count) => {
+        // Hanya simulasi: Tambahkan jumlah mahasiswa ke daftar yang sudah ada
+        setMahasiswaList(prev => [...prev, { 
+            nim: `1210${prev.length + 3}`, 
+            nama: `Mahasiswa Baru (${count} data)`,
+        }]);
+        // Dalam implementasi nyata: panggil fetchData() untuk refresh data
     };
 
     // 🔥 HANDLER UNTUK HAPUS MAHASISWA
@@ -46,11 +57,10 @@ const KelasDetail = () => {
         }
         
         try {
-            // Simulasi: Panggil await api.delete(`/dosen/kelas/${kelas.id}/mahasiswa/${nim}`); 
             setMahasiswaList(prev => prev.filter(mhs => mhs.nim !== nim));
-            alert(`Mahasiswa NIM ${nim} telah dihapus (Simulasi).`);
+            console.log(`Mahasiswa NIM ${nim} telah dihapus (Simulasi).`);
         } catch (error) {
-            alert('Gagal menghapus mahasiswa. Cek API Mock.');
+            console.error('Gagal menghapus mahasiswa. Cek API Mock.');
         }
     };
     // ------------------------------------------
@@ -70,13 +80,14 @@ const KelasDetail = () => {
                     Daftar Mahasiswa ({mahasiswaList.length})
                 </div>
                 <div className="card-body">
-                    {/* TOMBOL IMPORT MAHASISWA DENGAN HANDLER */}
+                    {/* TOMBOL IMPORT MAHASISWA DENGAN HANDLER BARU */}
                     <button 
                         className="btn btn-success btn-sm mb-3" 
                         onClick={handleImportMahasiswa} 
                     >
                         <i className="bi bi-upload"></i> Import Mahasiswa
                     </button>
+                    {/* ... (Tabel Mahasiswa) ... */}
                     <table className="table table-striped">
                         <thead>
                             <tr>
@@ -111,6 +122,14 @@ const KelasDetail = () => {
                     </table>
                 </div>
             </div>
+            
+            {/* 💡 MODAL IMPORT DIINTEGRASIKAN */}
+            <ImportMahasiswaModal
+                show={showImportModal}
+                onClose={() => setShowImportModal(false)}
+                kelasId={kelas.id}
+                onImportSuccess={handleImportSuccess}
+            />
         </div>
     );
 };
