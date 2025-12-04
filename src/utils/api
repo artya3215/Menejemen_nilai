@@ -1,0 +1,18 @@
+// src/utils/api.js
+import axios from 'axios';
+
+// Ganti URL ini dengan URL API backend Anda (misal: http://localhost/api)
+const API_BASE_URL = 'http://localhost/sistem-penilaian-api/public/api'; 
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    // Anda bisa menambahkan header otorisasi di sini jika sudah ada token
+    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+  },
+});
+
+// Anda bisa menambahkan interceptor di sini untuk menangani error 401 (Unauthenticated)
+
+export default api;
